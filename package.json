@@ -4,8 +4,7 @@
   "description": "Show if my GitHub is green today",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test-server": "light-server -s . -w '**'"
+    "dev": "next dev"
   },
   "repository": {
     "type": "git",
@@ -17,7 +16,11 @@
     "url": "https://github.com/ifireball/amigreentoday/issues"
   },
   "homepage": "https://github.com/ifireball/amigreentoday#readme",
-  "devDependencies": {
-    "light-server": "^2.9.1"
+  "dependencies": {
+    "@octokit/core": "^5.0.1",
+    "next": "^13.5.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "swr": "^2.2.4"
   }
 }
