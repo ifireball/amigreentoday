@@ -13,9 +13,21 @@ async function fetchPublicEvents() {
           'X-GitHub-Api-Version': '2022-11-28'
         }
     })
-    console.log("Fetched GitHub data")
-    console.log(data)
-    return data
+    return group(data)
+}
+
+function group(data) {
+    const groupMap = data.reduce(
+        (gd, e) => {
+            const key = new Date(e.created_at).toDateString()
+            const group = gd.get(key) || []
+            group.push(e)
+            gd.set(key, group)
+            return gd
+        },
+        new Map()
+    )
+    return [...groupMap.entries()]
 }
 
 function EventTable() {
@@ -26,17 +38,41 @@ function EventTable() {
     } else if (error) {
         return <p>Error</p>
     } else {
+        console.log(data)
         return <table>
-            <thead><tr><th>id<th></th></th><th>date</th><th>type</th></tr></thead>
-            <tbody>
-                {data.map((event) => (
-                    <tr key={event.id}>
-                        <td>{event.id}</td>
-                        <td>{event.created_at}</td>
-                        <td>{event.type}</td>
-                    </tr>
-                ))}
-            </tbody>
+            <style jsx>{`
+                button {
+                    appearance: none;
+                    color: blue;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                }
+                table {
+                    border-collapse: collapse;
+                }
+                th, td {
+                    border: 1px solid black;
+                    margin: 0;
+                    padding: 2px 10px;
+                }
+                tbody:nth-child(even) {
+                    background: #eee;
+                }
+            `}</style>
+            <thead><tr><th>date</th><th>time</th><th>type</th><th>#</th></tr></thead>
+            {data.map(([date, group]) => (
+                <tbody key={date}>
+                    {group.map((event, idx) => (
+                        <tr key={event.id}>
+                            {idx == 0 ? <td rowSpan={group.length}>{date}</td> : ""}
+                            <td><button onClick={() => (console.log(event))}>{event.created_at}</button></td>
+                            <td>{event.type}</td>
+                            {idx == 0 ? <td rowSpan={group.length}>{group.length}</td> : ""}
+                        </tr>
+                    ))}
+                </tbody>
+            ))}
         </table>
     }
 }
